@@ -1,0 +1,80 @@
+---
+title: "Prac_prog_3"
+author: "Kimberly Matarrita"
+date: "2023-12-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+library(DT)
+library(ggplot2)
+library(shiny)
+library(leaflet)
+library(readr)
+library(janitor)
+library(dplyr)
+library(stringr)
+library(plotly)
+library(gt)
+library(waiter)
+library(readr)
+library(shiny)
+library(plotly)
+library(dplyr)
+```
+
+```{r}
+spotify_data <- read_delim("spotify_2000_2023.csv", 
+    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+View(spotify_data)
+
+```
+
+```{r}
+
+ui <- fluidPage(
+  titlePanel("Análisis de Canciones Top en Spotify"),
+   skin = "blue",
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("year", "Seleccionar Año", choices = unique(spotify_data$year)),
+      selectInput("top genre", "Seleccionar Género", choices = unique(spotify_data$genre)),
+      downloadButton("downloadData", "Descargar Datos")
+    ),
+    mainPanel(
+      plotlyOutput("interactivePlot")
+    )
+  )
+)
+
+
+server <- function(input, output) {
+  
+  filtered_data <- reactive({
+    filter(spotify_data, year == input$year, genre == input$ genre)
+  })
+  
+  
+  output$interactivePlot <- renderPlotly({
+    plot_ly(filtered_data(), x = ~bpm, y = ~popularity, color = ~energy, type = 'scatter', mode = 'markers')
+  })
+  
+ 
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste("spotify_data_", input$year, input$genre, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(filtered_data(), file, row.names = FALSE)
+    }
+  )
+}
+
+
+shinyApp(ui = ui, server = server)
+
+
+```
+
