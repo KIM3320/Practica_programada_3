@@ -36,11 +36,11 @@ View(spotify_2000_2023)
 
 
 ```{r}
-# Asegúrate de leer los datos correctamente
+
 spotify_2000_2023 <- read_delim("spotify_2000_2023.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 View(spotify_2000_2023)
 
-# Utiliza el nombre correcto de los datos en tu aplicación Shiny
+
 unique_years <- sort(unique(spotify_2000_2023$year))
 unique_genres <- unique(spotify_2000_2023$`top genre`)
 
